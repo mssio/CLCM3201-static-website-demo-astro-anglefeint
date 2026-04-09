@@ -19,6 +19,7 @@ const themeDefaultI18nEntry = existsSync(
 // https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
+  base: '/CLCM3201-static-website-demo-astro-anglefeint',
   vite: {
     resolve: {
       alias: {

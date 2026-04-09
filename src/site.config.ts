@@ -24,6 +24,9 @@ export { normalizeI18nConfig } from './site.config.runtime.ts';
  * Omitted fields safely fall back to theme defaults.
  */
 export const THEME_CONFIG = defineThemeConfig({
+  site: {
+    url: 'https://mssio.github.io/CLCM3201-static-website-demo-astro-anglefeint',
+  },
   // Example:
   // i18n: {
   //   defaultLocale: 'en',

@@ -245,6 +245,94 @@ If these required fields are missing, the comments block is not rendered.
 - Parts of the base typography CSS are adapted from Bear Blog defaults (MIT).  
   Source note is preserved in `src/styles/global.css`.
 
+## Deploy to GitHub Pages
+
+### Step 1: Set your site URL
+
+Open `src/site.config.ts` and set `site.url` to your GitHub Pages URL:
+
+```
+https://<your-github-username>.github.io/<your-repo-name>
+```
+
+If your repo is named `<username>.github.io`, the URL is just `https://<username>.github.io`.
+
+### Step 2: Create the GitHub Actions workflow
+
+Create `.github/workflows/deploy.yml` with the following content:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run build
+        env:
+          PUBLIC_SITE_URL: https://<your-github-username>.github.io/<your-repo-name>
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
+```
+
+Replace `<your-github-username>` and `<your-repo-name>` with your actual values.
+
+### Step 3: Enable GitHub Pages in repository settings
+
+1. Go to your GitHub repository
+2. Click **Settings** → **Pages**
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**
+4. Save
+
+### Step 4: Push and deploy
+
+```bash
+git add .github/workflows/deploy.yml
+git commit -m "Add GitHub Pages deployment workflow"
+git push
+```
+
+The workflow triggers automatically on every push to `main`. Monitor progress under the **Actions** tab.
+
+### Step 5: Verify
+
+Once the workflow completes, your site will be live at:
+
+```
+https://<your-github-username>.github.io/<your-repo-name>
+```
+
 ## License
 
 MIT License. See `LICENSE`.
